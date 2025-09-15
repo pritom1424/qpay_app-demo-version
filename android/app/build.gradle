@@ -1,0 +1,123 @@
+plugins {
+    id "com.android.application"
+    id "kotlin-android"
+    id "dev.flutter.flutter-gradle-plugin"
+    id 'com.google.gms.google-services'
+}
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file('local.properties')
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withReader('UTF-8') { reader ->
+        localProperties.load(reader)
+    }
+}
+
+
+
+def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
+if (flutterVersionCode == null) {
+    flutterVersionCode = '1'
+}
+
+def flutterVersionName = localProperties.getProperty('flutter.versionName')
+if (flutterVersionName == null) {
+    flutterVersionName = '1.0.0'
+}
+
+
+//
+
+
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file('key.properties')
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
+
+android {
+    compileSdkVersion 36
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
+
+
+    defaultConfig {
+        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
+        applicationId "san.recursion.qpay"
+        minSdkVersion 24
+        targetSdkVersion 35
+        versionCode flutterVersionCode.toInteger()
+        versionName flutterVersionName
+
+    }
+
+     signingConfigs {
+          release {
+              keyAlias keystoreProperties['keyAlias']
+              keyPassword keystoreProperties['keyPassword']
+              storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
+              storePassword keystoreProperties['storePassword']
+          }
+     }
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release   // <— this must be set
+            minifyEnabled true              // obfuscate code and remove unused code
+            shrinkResources true            // shrink and remove unused resources
+            debuggable false  
+
+            // TODO: Add your own signing config for the release build.
+            // Signing with the debug keys for now, so `flutter run --release` works.
+          //  signingConfig signingConfigs.release
+           // TODO: Add your own signing config for the release build.
+            // Signing with the debug keys for now, so `flutter run --release` works.
+         // signingConfig = signingConfigs.getByName("debug")
+        }
+//        debug {
+//            ndk {
+//                if (project.hasProperty('target-platform') &&
+//                        project.property('target-platform') == 'android-arm64') {
+//                    abiFilters 'arm64-v8a'
+//                } else {
+//                    abiFilters 'armeabi-v7a'
+//                }
+//            }
+//        }
+    }
+    lint {
+        disable 'InvalidPackage'
+    }
+    namespace 'com.recursion.qpay'
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+        // Enable core library desugaring
+        coreLibraryDesugaringEnabled true
+    }
+    kotlinOptions {
+        jvmTarget = '11'
+    }
+    // buildToolsVersion '33.0.0' // Optional: let AGP manage this
+    // ndkVersion "27.0.12077973" // Only needed if you use native code
+}
+
+flutter {
+    source '../..'
+}
+
+
+dependencies {
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'
+
+//    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    implementation 'com.google.android.gms:play-services-vision:20.1.1'
+    implementation "com.google.android.gms:play-services-vision-common:19.1.1"
+    implementation "com.google.android.gms:play-services-vision-face-contour-internal:16.0.2"
+    implementation 'com.google.android.gms:play-services-vision-image-label:18.0.5'
+    implementation "com.google.firebase:firebase-ml-vision-face-model:20.0.2"
+//    implementation 'com.google.android.gms:play-services-mlkit-text-recognition:16.0.0'
+
+}
